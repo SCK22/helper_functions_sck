@@ -1,0 +1,40 @@
+def generate_layout_bar(col_name):
+    layout_bar = go.Layout(
+        autosize=False, # auto size the graph? use False if you are specifying the height and width
+        width=800, # height of the figure in pixels
+        height=600, # height of the figure in pixels
+        title = "Distribution of {} column".format(col_name), # title of the figure
+        # more granular control on the title font 
+        titlefont=dict( 
+            family='Courier New, monospace', # font family
+            size=14, # size of the font
+            color='black' # color of the font
+        ),
+        # granular control on the axes objects 
+        xaxis=dict( 
+        tickfont=dict(
+            family='Courier New, monospace', # font family
+            size=14, # size of ticks displayed on the x axis
+            color='black'  # color of the font
+            )
+        ),
+        yaxis=dict(
+#         range=[0,100],
+            title='Percentage',
+            titlefont=dict(
+                size=14,
+                color='black'
+            ),
+        tickfont=dict(
+            family='Courier New, monospace', # font family
+            size=14, # size of ticks displayed on the y axis
+            color='black' # color of the font
+            )
+        ),
+        font = dict(
+            family='Courier New, monospace', # font family
+            color = "white",# color of the font
+            size = 12 # size of the font displayed on the bar
+                )  
+        )
+    return layout_bar
