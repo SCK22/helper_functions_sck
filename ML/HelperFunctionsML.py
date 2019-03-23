@@ -235,7 +235,11 @@ def models_dict():
 # 	models_dict = {'h2o_gbe':h2o_gbe,
 # 	}
 if __name__ == "__main__":
-	
+	#misc
+	import os
+	import sys
+	from datetime import datetime
+	from time import time
 	#Data processing
 	import pandas as pd
 	import numpy as np
@@ -258,6 +262,3 @@ if __name__ == "__main__":
 	from sklearn.neighbors import RadiusNeighborsClassifier
 	#metrics
 	from sklearn.metrics import accuracy_score, precision_score, recall_score
-	#misc
-	from datetime import datetime
-	from time import time
