@@ -1,4 +1,4 @@
-"""Helper Functions to do Plotting"""
+"""Helper Functions for Plotting"""
 
 def generateLayoutBar(col_name):
     """
