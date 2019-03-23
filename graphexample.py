@@ -23,7 +23,6 @@ app.layout = html.Div([
     )
 ])
 
-
 @app.callback(
     dash.dependencies.Output('graph-with-slider', 'figure'),
     [dash.dependencies.Input('year-slider', 'value')])
