@@ -1,5 +1,11 @@
 """Helper Functions for Plotting"""
 
+import plotly
+import plotly.offline as pyoff
+import plotly.figure_factory as ff
+from plotly.offline import init_notebook_mode, iplot, plot
+import plotly.graph_objs as go
+
 def generateLayoutBar(col_name):
     """
     Generate a layout object for bar chart
