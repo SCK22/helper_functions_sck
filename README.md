@@ -1,2 +1,2 @@
 # HelperFunctions
-A collection of functions that I use for my analysis and model building.
+A collection of functions that be used for analysis and model building.
