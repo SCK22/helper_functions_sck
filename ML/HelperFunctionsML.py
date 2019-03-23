@@ -38,6 +38,9 @@ def remove_columns_from_list(original_list , cols_to_remove):
     "Removes specified values from the list"
     return [i for i in original_list if i not in cols_to_remove]
 
+def same_format_exception(col):
+	print ("The column {} is already in the mentioned format".format(col))
+
 def convert_data_types(dataset, col_dtypes_df):
     for i in col_dtypes_df.values:
         try:
@@ -50,9 +53,9 @@ def convert_data_types(dataset, col_dtypes_df):
         except:
             try:
                 if i[1] == 'categorical' and dataset.loc[:,i[0]].dtype == 'str':
-                    print(sameFormatException(i))
+                    print(same_format_exception(i))
                 if i[1] == 'numeric' and dataset.loc[:,i[0]].dtype in ['int64', 'float64']:
-                    print(sameFormatException(i))
+                    print(same_format_exception(i))
             except KeyError:
                 print ("column {} not in the dataset".format(i[0]))
     return dataset
