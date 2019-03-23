@@ -1,17 +1,17 @@
 """Helper Functions to do ML"""
 # Functions for manipulating the dataset
-def ListOfNaCols(dataset,per = 0.3):
-	"""This function will return the columns with na values
+def list_of_na_cols(dataset,per = 30):
+	"""This function will return the columns with na values.
 	Default threshold for na values is 30 percent."""
-	na_cols = dataset.isnull().sum()[dataset.isnull().sum()>per]
+	na_cols = dataset.isnull().sum()[dataset.isnull().sum()>(per/100)]
 	return(list(na_cols.index))
 
-def CreateDummyDataFrame(dataset, categorical_attributes):
+def create_dummy_dataframe(dataset, categorical_attributes):
 	# import pandas as pd
 	"""This function returns a dataframe of dummified colums Pass the dataset and the column names."""
 	return pd.get_dummies(dataset[categorical_attributes])
 
-def ImputeNumericCol(column, method=['mean', 'median']):
+def impute_numeric_col(column, method=['mean', 'median']):
 	"""This function replaces the na values with the column mean or median , based on the selection."""
 	import numpy as np
 	if method == None:
@@ -21,7 +21,7 @@ def ImputeNumericCol(column, method=['mean', 'median']):
 	if method == 'median':
 		return column.fillna(axis=0,value=np.nanmedian(column))
 
-def extractColTypes(dataset):
+def extract_col_types(dataset):
     """This functions extracts numeric, categorical , datetime and boolean column types.
     Returns 4 lists with respective column types"""
     num_cols_list = [i for i in dataset.columns if dataset[i].dtype in ['int64','float64']]
@@ -34,11 +34,11 @@ def extractColTypes(dataset):
     print ("Boolean Columns:",len(bool_cols_list))
     return(num_cols_list,cat_cols_list,date_cols_list,bool_cols_list)
 
-def removeColumnsFromList(original_list , cols_to_remove):
+def remove_columns_from_list(original_list , cols_to_remove):
     "Removes specified values from the list"
     return [i for i in original_list if i not in cols_to_remove]
 
-def convertDataTypes(dataset, col_dtypes_df):
+def convert_data_types(dataset, col_dtypes_df):
     for i in col_dtypes_df.values:
         try:
             if i[1] in ['categorical', 'O', 'object']:
@@ -57,7 +57,7 @@ def convertDataTypes(dataset, col_dtypes_df):
                 print ("column {} not in the dataset".format(i[0]))
     return dataset
 
-def ReplaceAttributeValues(dataset, target_attribute, originals, replace_with):
+def replace_attribute_values(dataset, target_attribute, originals, replace_with):
 
 	""" This function takes a pandas series object and replaces the specified values with specified values."""
 	if len(originals) == len(replace_with):
@@ -68,7 +68,7 @@ def ReplaceAttributeValues(dataset, target_attribute, originals, replace_with):
 	return dataset
 
 # modeling functions
-def ApplyModelValidateReturnPrediction(model_name, X_train, y_train, X_validation, y_validation, test_data, feature_names):
+def apply_model_validate_return_prediction(model_name, X_train, y_train, X_validation, y_validation, test_data, feature_names):
 	"""This function
 	1.Applies the specified model to the train data.
 	2.Validates on the validation set.
@@ -99,7 +99,7 @@ def ApplyModelValidateReturnPrediction(model_name, X_train, y_train, X_validatio
 	test_pred = model_name.predict(test_data[feature_names]) # predict on test data
 	return test_pred,"Model \'{}\'\n Accuracy:{}\n Precision:{}\n Recall:{}\n".format(model_name,acc_val,prec_val,rec_val)
 
-def modelsDict():
+def models_dict():
 
 	knn_model_3 = KNeighborsClassifier(3),
 	knn_model_5 = KNeighborsClassifier(5),
