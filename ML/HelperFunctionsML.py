@@ -60,14 +60,13 @@ def convert_data_types(dataset, col_dtypes_df):
                 print ("column {} not in the dataset".format(i[0]))
     return dataset
 
-def replace_attribute_values(dataset, target_attribute, originals, replace_with):
-
+def replace_attribute_values(dataset, col_name, originals, replace_with):
 	""" This function takes a pandas series object and replaces the specified values with specified values."""
 	if len(originals) == len(replace_with):
 		for i in range(len(originals)):
-			dataset[target_attribute].replace(originals[i],replace_with[i],inplace=True)
+			dataset[col_name].replace(originals[i],replace_with[i],inplace=True)
 	elif len(originals != len(replace_with)):
-		raise ValueError("replacement values do not match the size of originals")
+		raise ValueError("size of replacement values do not match the size of originals")
 	return dataset
 
 # modeling functions
@@ -78,7 +77,6 @@ def apply_model_validate_return_prediction(model_name, X_train, y_train, X_valid
 	3.Predicts on the test dataset
 	4.Returns the predictions along with some scores.
 	This is for classification."""
-
 	
 	# apply the model
 	model_name.fit(X_train[feature_names], y_train)
