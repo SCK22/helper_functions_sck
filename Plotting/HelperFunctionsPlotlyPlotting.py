@@ -1,10 +1,12 @@
 """Helper Functions for Plotting"""
+import numpy as np
 
 import plotly
 import plotly.offline as pyoff
 import plotly.figure_factory as ff
 from plotly.offline import init_notebook_mode, iplot, plot
 import plotly.graph_objs as go
+init_notebook_mode(connected = True)
 
 def generateLayoutBar(col_name):
     """
