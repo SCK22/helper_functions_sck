@@ -8,7 +8,7 @@ from plotly.offline import init_notebook_mode, iplot, plot
 import plotly.graph_objs as go
 init_notebook_mode(connected = True)
 
-def generateLayoutBar(col_name):
+def generate_layout_bar(col_name):
     """
     Generate a layout object for bar chart
     """
@@ -53,7 +53,7 @@ def generateLayoutBar(col_name):
     return layout_bar
 
 
-def plotBar(dataframe_name, col_name, top_n=None):
+def plot_count_bar(dataframe_name, col_name, top_n=None):
     """
     Plot a bar chart for the categorical columns
 
@@ -77,12 +77,42 @@ def plotBar(dataframe_name, col_name, top_n=None):
             textposition='auto',  # specify at which position on the bar the text should appear
             marker=dict(color='#0047AB'),)]  # change color of the bar
     # color used here Cobalt Blue
-    layout_bar = generateLayoutBar(col_name=col_name)
+    layout_bar = generate_layout_bar(col_name=col_name)
+    fig = go.Figure(data=data, layout=layout_bar)
+    return iplot(fig)
+
+def plot_bar(dataframe_name, cat_col_name, num_col_name, top_n = 20):
+    """
+    Plot a bar chart with the mentioned columns
+
+    Arguments:
+    dataframe name
+    categorical column name
+    numeric column name
+
+    Output:
+    Plot
+    """
+    # create a table with value counts
+    dataframe_name = dataframe_name.sort_values(by = num_col_name, ascending = False)
+    dataframe_name = dataframe_name.head(top_n)
+    x = dataframe_name[cat_col_name]
+    y = dataframe_name[num_col_name]
+    # creating a Bar chart object of plotly
+    data = [go.Bar(
+            x=x,  # x axis values
+            y=y,  # y axis values
+            text=['{}%'.format(np.round(i,2)) for i in y],
+            # text to be displayed on the bar, we are doing this to display the '%' symbol along with the number on the bar
+            textposition='auto',  # specify at which position on the bar the text should appear
+            marker=dict(color='#0047AB'),)]  # change color of the bar
+    # color used here Cobalt Blue
+    layout_bar = generate_layout_bar(col_name=cat_col_name)
     fig = go.Figure(data=data, layout=layout_bar)
     return iplot(fig)
 
 
-def plotHist(dataframe, col_name):
+def plot_hist(dataframe, col_name):
     """Plot histogram"""
     data = [go.Histogram(x=dataframe[col_name],
                          marker=dict(
@@ -94,7 +124,7 @@ def plotHist(dataframe, col_name):
     return iplot(fig)
 
 
-def plotMultiBox(dataframe, col_name, num_col_name):
+def plot_multi_box(dataframe, col_name, num_col_name):
     """Plot multiple box plots based on the levels in a column"""
     data = []
     for i in dataframe[col_name].unique():
