@@ -1,61 +1,106 @@
 """Helper functions for Machine Learning"""
 import numpy as np
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from sklearn.svm import SVC, NuSVC
-from sklearn.neural_network import MLPClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.gaussian_process import GaussianProcessClassifier
-from sklearn.gaussian_process.kernels import RBF
-from sklearn.ensemble import RandomForestClassifier,  AdaBoostClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.neighbors import NearestCentroid
-from sklearn.linear_model import RidgeClassifier
-from sklearn.linear_model import RidgeClassifierCV, LogisticRegressionCV, SGDClassifier, PassiveAggressiveClassifier
-from sklearn.neighbors import RadiusNeighborsClassifier
-from sklearn.metrics import accuracy_score, recall_score
+from sklearn.model_selection import train_test_split
+# from sklearn.tree import DecisionTreeClassifier
+# from sklearn.linear_model import LogisticRegression
+# from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+# from sklearn.svm import SVC, NuSVC
+# from sklearn.neural_network import MLPClassifier
+# from sklearn.neighbors import KNeighborsClassifier
+# from sklearn.gaussian_process import GaussianProcessClassifier
+# from sklearn.gaussian_process.kernels import RBF
+# from sklearn.ensemble import RandomForestClassifier,  AdaBoostClassifier
+# from sklearn.naive_bayes import GaussianNB
+# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+# from sklearn.ensemble import ExtraTreesClassifier
+# from sklearn.neighbors import NearestCentroid
+# from sklearn.linear_model import RidgeClassifier
+# from sklearn.linear_model import RidgeClassifierCV, LogisticRegressionCV, SGDClassifier, PassiveAggressiveClassifier
+# from sklearn.neighbors import RadiusNeighborsClassifier
+# from sklearn.metrics import accuracy_score, recall_score
 
 class HelperFunctionsML:
 	"""Helper functions for Machine Learning"""
 
-def __init__(self, dataset):
-	"""Helper Functions to do ML"""
-
-	self.dataset = dataset
-
-	def cat_num_extract(self):
-		dataset = self.dataset
-		"""This function returns the names of the Categorical and Nmeric attributes in the same order."""
-		cat_cols = [i for i in dataset.columns.values if dataset[i].dtype in ['O', 'object']]
-		num_cols = [i for i in dataset.columns.values if dataset[i].dtype not in ['O', 'object']]
-		return(cat_cols, num_cols)
-
-	def list_of_na_cols(self, dataset, per=0.3):
-		"""This function will return the columns with na values"""
-
+	def __init__(self, dataset):
+		"""Helper Functions to do ML"""
 		self.dataset = dataset
-		self.per = per
+		self.target = None
+		self.col_names = self.dataset.columns
+		self.nrows_ = dataset.shape[0]
+		self.ncols_ = dataset.shape[1]
+	
+	# @staticmethod
+	def cat_num_extract(self):
+		"""This function returns the names of the Categorical and Nmeric attributes in the same order."""
+		cat_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype in ['O', 'object']]
+		num_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype not in ['O', 'object']]
+		return {"cat_cols" : cat_cols, "num_cols": num_cols}
 
+	@staticmethod
+	def list_of_na_cols(dataset, per=0.3):
+		"""This function will return the columns with na values"""
 		na_cols = dataset.isnull().sum()[dataset.isnull().sum() > per]
-		return(list(na_cols.index))
+		return list(na_cols.index)
 
-	def create_dummy_data_frame(self, dataset, categorical_attributes):
-		"""This function returns a dataframe of dummified colums Pass the dataset and the column names."""
-		return (pd.get_dummies(dataset[categorical_attributes]))
+	def get_mode(self, x):
+		values, counts = np.unique(x.dropna(), return_counts=True)
+		m = counts.argmax()
+		return values[m]
 
-	def impute_numeric_col(self, column, method='median'):
-		"""This function replaces the na values with the colum mean or median ,  based on the selection.
-		Available values for method are 'meidan',  'mean'. default is median
+	def impute_categorical_cols(self, return_frames = False):
+		"""This function replaces the na values with the colum mode
 		This function might not be needed anymore as sklearn .22 has KNN imputation which I would prefer to use."""
-		
-		if method == 'mean':
-			return (column.fillna(axis=0, value=np.mean(column)))
-		if method == 'median':
-			return (column.fillna(axis=0, value=np.median(column)))
+		cat_cols = self.cat_num_extract()["cat_cols"]
+		if cat_cols:
+			self.dataset.loc[:,cat_cols].isnull
+			self.dataset.loc[:,cat_cols] = self.dataset.loc[:,cat_cols].apply(lambda x : x.fillna(value=self.get_mode(x)))
+		if return_frames:
+			return self.dataset
+
+	def impute_numeric_cols(self, method="median", return_frames = False):
+		"""This function replaces the na values with the colum mean or median ,  based on the selection.
+		Available values for method are "meidan",  "mean". default is median
+		This function might not be needed anymore as sklearn .22 has KNN imputation which I would prefer to use."""
+		num_cols = self.cat_num_extract()["num_cols"]
+		if num_cols and method == "mean":
+			self.dataset = self.dataset.loc[:,num_cols].apply(lambda x : x.fillna(value=x.mean()))
+		if num_cols and method == "median":
+			self.dataset = self.dataset.loc[:,num_cols].apply(lambda x : x.fillna(value=x.median()))
+		if return_frames:
+			return self.dataset
+	
+	def create_dummy_data_frame(self, categorical_attributes = None):
+		"""This function returns a dataframe of dummified colums Pass the dataset and the column names."""
+		if categorical_attributes is None:
+			categorical_attributes = self.cat_num_extract()["cat_cols"]
+			print("cat_cols : {}".format(categorical_attributes))
+		if categorical_attributes:
+			return (pd.get_dummies(self.dataset[categorical_attributes]))
+		else:
+			return self.dataset
+	
+	def set_target(self, col_name):
+		self.target = col_name
+
+	def create_train_test_split(self, test_size = None, random_state= 42, return_frames= False):
+		if test_size == None:
+			test_size = 0.3
+		if self.target is not None:
+			X = self.dataset.loc[:, [i for i in self.col_names if i !=self.target]]
+			y = self.dataset.loc[:, [self.target]]
+			X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size, random_state= random_state) 
+			self.X_train = X_train
+			self.X_test = X_test
+			self.y_train  = y_train
+			self.y_test = y_test
+			self.nrowstrain_, self.ncolstrain_ = X_train.shape
+			self.nrowstest_, self.ncolstest_ = X_test.shape
+		else:
+			print("target not set, call the function set_target with the name of the target column")
+		if return_frames:
+			return X_train, X_test, y_train, y_test
 
 	def apply_model_predict_validate(self, model_name, X_train, y_train, X_validation, y_validation, test_data, feature_names):
 		"""This function
