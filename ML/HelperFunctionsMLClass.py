@@ -17,16 +17,17 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.linear_model import RidgeClassifier
 from sklearn.linear_model import RidgeClassifierCV, LogisticRegressionCV, SGDClassifier, PassiveAggressiveClassifier
 from sklearn.neighbors import RadiusNeighborsClassifier
+from sklearn.metrics import accuracy_score, recall_score
 
 class HelperFunctionsML:
 	"""Helper functions for Machine Learning"""
 
-
-def __init__(self):
+def __init__(self, dataset):
 	"""Helper Functions to do ML"""
 
-	def cat_num_extract(self, dataset):
+	self.dataset = dataset
 
+	def cat_num_extract(self):
 		dataset = self.dataset
 		"""This function returns the names of the Categorical and Nmeric attributes in the same order."""
 		cat_cols = [i for i in dataset.columns.values if dataset[i].dtype in ['O', 'object']]
