@@ -89,7 +89,6 @@ def plot_bar(dataframe_name, cat_col_name, num_col_name, top_n = 20):
     dataframe name
     categorical column name
     numeric column name
-
     Output:
     Plot
     """
