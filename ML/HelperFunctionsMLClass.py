@@ -25,20 +25,21 @@ def __init__(self):
 		na_cols = dataset.isnull().sum()[dataset.isnull().sum() > per]
 		return(list(na_cols.index))
 
-	def createDummyDataFrame(dataset, categorical_attributes):
+	def createDummyDataFrame(self, dataset, categorical_attributes):
 		"""This function returns a dataframe of dummified colums Pass the dataset and the column names."""
 		return (pd.get_dummies(dataset[categorical_attributes]))
 
-	def imputeNumericCol(column, method='median'):
+	def imputeNumericCol(self, column, method='median'):
 		"""This function replaces the na values with the colum mean or median ,  based on the selection.
-		Available values for method are 'meidan',  'mean'. default is median"""
-
+		Available values for method are 'meidan',  'mean'. default is median
+		This function might not be needed anymore as sklearn .22 has KNN imputation which I would prefer to use."""
+		
 		if method == 'mean':
 			return (column.fillna(axis=0, value=np.mean(column)))
 		if method == 'median':
 			return (column.fillna(axis=0, value=np.nanmedian(column)))
 
-	def applyModelValidateReturnPrediction(model_name, X_train, y_train, X_validation, y_validation, test_data, feature_names):
+	def applyModelValidateReturnPrediction(self, model_name, X_train, y_train, X_validation, y_validation, test_data, feature_names):
 		"""This function
 		1.Applies the specified model to the train data.
 		2.Validates on the validation set.
@@ -63,7 +64,7 @@ def __init__(self):
 		return(test_pred, "Model \'{}\'\n Accuracy:{}\n Precision:{}\n Recall:{}\n".format(model_name, acc_val, prec_val, rec_val))
 
 	# Replace values in an attribute with other values
-	def replaceAttributeValues(dataset, target_attribute, originals, replace_with):
+	def replaceAttributeValues(self, dataset, target_attribute, originals, replace_with):
 		""" This function takes a pandas series object and replaces the specified values with specified values."""
 		if len(originals) == len(replace_with):
 			for i in range(len(originals)):
@@ -72,7 +73,7 @@ def __init__(self):
 			raise ValueError("replacement values do not match the size of originals")
 		return dataset
 
-	def importModels():
+	def importModels(self):
 		"""Importing all models from sklearn classification."""
 		from sklearn.tree import DecisionTreeClassifier
 		from sklearn.linear_model import LogisticRegression
