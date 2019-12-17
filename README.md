@@ -25,7 +25,7 @@ create_dummy_data_frame
 ```
 
 
-Suggestions are welcome: [S.Chaithanya Kumar](mailto:chaithanyakumar.ds@gmail.com?subject=[GitHub]SCK22/HelperFunctions)
+Suggestions are welcome, please click here to send an email: [S.Chaithanya Kumar](mailto:chaithanyakumar.ds@gmail.com?subject=[GitHub]SCK22/HelperFunctions)
 
 
 
