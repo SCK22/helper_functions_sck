@@ -23,7 +23,7 @@ impute_numeric_cols
 create_dummy_data_frame
 
 ```
-Interested in using these functions? checkout my [howtouse/How to use.ipynb](ipython notebook) which outlines how these functions can be used.
+Interested in using these functions? checkout my [ipython notebook](howtouse/How to use.ipynb) which outlines how these functions can be used.
 
 
 Suggestions are welcome, please click here to send an email: [S.Chaithanya Kumar](mailto:chaithanyakumar.ds@gmail.com?subject=[GitHub]SCK22/HelperFunctions)
