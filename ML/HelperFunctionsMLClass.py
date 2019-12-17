@@ -28,8 +28,8 @@ class HelperFunctionsML:
 		self.dataset = dataset
 		self.target = None
 		self.col_names = self.dataset.columns
-		self.nrows_ = dataset.shape[0]
-		self.ncols_ = dataset.shape[1]
+		self.nrows = dataset.shape[0]
+		self.ncols = dataset.shape[1]
 
 	def check_has_na_values(self):
 		has_na_values = True if np.sum(self.dataset.isnull().sum())>0 else False
@@ -100,8 +100,8 @@ class HelperFunctionsML:
 			self.X_test = X_test
 			self.y_train  = y_train
 			self.y_test = y_test
-			self.nrowstrain_, self.ncolstrain_ = X_train.shape
-			self.nrowstest_, self.ncolstest_ = X_test.shape
+			self.nrowstrain, self.ncolstrain = X_train.shape
+			self.nrowstest, self.ncolstest = X_test.shape
 		else:
 			print("target not set, call the function set_target with the name of the target column")
 		if return_frames:
