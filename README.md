@@ -5,7 +5,7 @@ Do you work on data analysis and model building projects on a daily basis?
 
 Did you notice the number of lines of code that are duplicated acorss your analyses?
 
-> I have faced the same situation and decided to package some of the blocks of code that are useful into concise, reusable functions.
+> I have faced the this situation and decided to package some of the blocks of code that are useful into concise, reusable functions, this saved a lot of time for me, so I decided to make these available for the community to use.
 
 ##### This is a collection of functions that be used for analysis and model building. It follows the convention of creating an object instance of the class HelperFunctionsML, upon which we can apply a set of functions/actions.
 
