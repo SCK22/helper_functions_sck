@@ -10,7 +10,7 @@ Did you notice the number of lines of code that are duplicated acorss your analy
 
 Every action on the dataset is applied `inplace` , i.e the changed/updated dataset is updated and this new dataset is used for the next function call that is applied.
 
-or simply put, the class treats the dataset as a shared variable across various functions.
+or simply put, the class treats the dataset as a `shared variable` across various functions.
 
 #### To convert the dataset into a HelperFunctionsML object:
 
