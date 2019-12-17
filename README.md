@@ -25,8 +25,8 @@ list_of_na_cols
 impute_categorical_cols
 impute_numeric_cols
 create_dummy_data_frame
-
 ```
+
 Interested in using these functions? checkout my [ipython notebook](howtouse/How%20to%20use.ipynb) which outlines how these functions can be used.
 
 
