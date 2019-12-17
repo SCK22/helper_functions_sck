@@ -1,4 +1,5 @@
-# HelperFunctions
+# HelperFunctions for EDA and model building in python
+
 
 Do you work on data analysis and model building projects on a daily basis?
 
