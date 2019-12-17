@@ -5,7 +5,7 @@ Did you notice the number of lines of code that are duplicated acorss your analy
 I have faced the same situation and decided to package some of the functions that are useful into concise, reusable functions.
 
 ### This is a collection of functions that be used for analysis and model building. It follows the convention of creating an object instance of the class HelperFunctionsML, upon which we can apply a set of functions/actions.
-Every action on the dataset is applied `inplace` , i.e the changed/updated dataset is update and this new dataset is used for the next function call that is applied.
+Every action on the dataset is applied `inplace` , i.e the changed/updated dataset is updated and this new dataset is used for the next function call that is applied.
 or simply put, the class treats the dataset as a shared variable across various functions.
 
 #### To convert the dataset into a HelperFunctionsML object:
