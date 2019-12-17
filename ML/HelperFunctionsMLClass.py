@@ -18,10 +18,10 @@ from sklearn.model_selection import train_test_split
 # from sklearn.linear_model import RidgeClassifier
 # from sklearn.linear_model import RidgeClassifierCV, LogisticRegressionCV, SGDClassifier, PassiveAggressiveClassifier
 # from sklearn.neighbors import RadiusNeighborsClassifier
-# from sklearn.metrics import accuracy_score, recall_score
+from sklearn.metrics import accuracy_score, recall_score
 
 class HelperFunctionsML:
-	"""Helper functions for Machine Learning"""
+	"""Helper functions for Machine Learning and EDA"""
 
 	def __init__(self, dataset):
 		"""Helper Functions to do ML"""
@@ -30,6 +30,11 @@ class HelperFunctionsML:
 		self.col_names = self.dataset.columns
 		self.nrows_ = dataset.shape[0]
 		self.ncols_ = dataset.shape[1]
+
+	def check_has_na_values(self):
+		has_na_values = True if np.sum(self.dataset.isnull().sum())>0 else False
+		self.has_na_values = has_na_values
+		return has_na_values
 	
 	# @staticmethod
 	def cat_num_extract(self):
