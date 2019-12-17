@@ -25,7 +25,7 @@ create_dummy_data_frame
 ```
 
 
-![S. Chaithanya Kumar](mailto:chaithanyakumar.ds@gmail.com?subject=[GitHub] SCK22/HelperFunctions repository)
+![S.Chaithanya Kumar](mailto:chaithanyakumar.ds@gmail.com?subject=[GitHub]SCK22/HelperFunctions repository)
 
 
 
