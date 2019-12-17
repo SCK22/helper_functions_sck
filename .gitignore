@@ -3,3 +3,10 @@
 .ipynb_checkpoints
 
 __pycache__
+
+build/
+dist/
+.vscode/
+*egg-info/
+
+tests/
