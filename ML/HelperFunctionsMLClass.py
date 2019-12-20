@@ -89,47 +89,55 @@ class HelperFunctionsML:
 	def set_target(self, col_name):
 		self.target = col_name
 
-	def create_train_test_split(self, test_size = None, random_state= 42, return_frames= False):
-		if test_size == None:
-			test_size = 0.3
+	def set_target_type(self, col_type):
+		if self.target is not None:
+			self.dataset.loc[:, [self.target]] = self.dataset.loc[:, [self.target]].astype(col_type)
+		else:
+			print("target not set, call the function set_target with the name of the target column")
+
+	def create_train_test_split(self, validation_size = 0.3, random_state= 42, return_frames= False):
+
 		if self.target is not None:
 			X = self.dataset.loc[:, [i for i in self.col_names if i !=self.target]]
 			y = self.dataset.loc[:, [self.target]]
-			X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size, random_state= random_state) 
+			X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size = validation_size, random_state= random_state) 
 			self.X_train = X_train
-			self.X_test = X_test
+			self.X_validation = X_validation
 			self.y_train  = y_train
-			self.y_test = y_test
+			self.y_validation = y_validation
 			self.nrowstrain, self.ncolstrain = X_train.shape
-			self.nrowstest, self.ncolstest = X_test.shape
+			self.nrowvalidation, self.ncolsvalidation = X_validation.shape
 		else:
 			print("target not set, call the function set_target with the name of the target column")
 		if return_frames:
-			return X_train, X_test, y_train, y_test
+			return X_train, X_validation, y_train, y_validation
 
-	def apply_model_predict_validate(self, model_name, X_train, y_train, X_validation, y_validation, test_data, feature_names):
+	def apply_model_predict_validate(self, model_obj, feature_names= None):
 		"""This function
 		1.Applies the specified model to the train data.
 		2.Validates on the validation set.
 		3.Predicts on the test dataset
 		4.Returns the predictions along with some scores.
-		This is for classification."""
-
+		"""
+		if feature_names is None:
+			feature_names = self.X_train.columns
 		# apply the model
-		model_name, acc_val, prec_val, rec_val = np.array(['NA'])*4
-		model_name.fit(X_train[feature_names], y_train)
+		
+		model_obj.fit(self.X_train.loc[:, feature_names], self.y_train)
 	 	# evaluation metrics
-		pred_val = model_name.predict(X_validation[feature_names])  # predict on the validation set
-		acc_val = accuracy_score(y_pred=pred_val, y_true=y_validation)  # Accuracy for the validation set
+		pred_val = model_obj.predict(self.X_validation[feature_names])  # predict on the validation set
+		acc_val = accuracy_score(y_pred=pred_val, y_true=self.y_validation)  # Accuracy for the validation set
 		try:
-			prec_val = precision_score(y_pred=pred_val, y_true=y_validation, average='macro')  # precision for the validation set
-		except: pass
+			prec_val = precision_score(y_pred=pred_val, y_true=self.y_validation, average='macro')  # precision for the validation set
+		except: 
+			prec_val = None
 		try:
-			rec_val = recall_score(y_pred=pred_val, y_true=y_validation, average='macro')  # recall for the validation set
-		except : pass
+			rec_val = recall_score(y_pred=pred_val, y_true=self.y_validation, average='macro')  # recall for the validation set
+		except:
+			rec_val = None
 		# test
-		test_pred = model_name.predict(test_data[feature_names])  # predict on test data
-		return(test_pred, "Model \'{}\'\n Accuracy:{}\n Precision:{}\n Recall:{}\n".format(model_name, acc_val, prec_val, rec_val))
+		# test_pred = model_obj.predict(test_data[feature_names])  # predict on test data
+		return(pred_val, "Model \'{}\'\n Accuracy:{}\n Precision:{}\n Recall:{}\n".format(model_obj, acc_val, prec_val, rec_val))
 
 	# Replace values in an attribute with other values
 	def replace_attribute_values(self, dataset, target_attribute, originals, replace_with):
