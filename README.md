@@ -1,8 +1,10 @@
-# HelperFunctions
+# HelperFunctions for EDA and model building in python
+
+Under active development!
 
 Do you work on data analysis and model building projects on a daily basis?
+
 Did you notice the number of lines of code that are duplicated acorss your analyses?
-I have faced the same situation and decided to package some of the functions that are useful into concise, reusable functions.
 
 ### This is a collection of functions that be used for analysis and model building. It follows the convention of creating an object instance of the class HelperFunctionsML, upon which we can apply a set of functions/actions.
 Every action on the dataset is applied `inplace` , i.e the changed/updated dataset is updated and this new dataset is used for the next function call that is applied.
@@ -21,8 +23,14 @@ list_of_na_cols
 impute_categorical_cols
 impute_numeric_cols
 create_dummy_data_frame
-
 ```
+
+Interested in using these functions? checkout my [ipython notebook](howtouse/How%20to%20use.ipynb) which outlines how these functions can be used.
+
+
+Suggestions are welcome, please click here to send an email: [S.Chaithanya Kumar](mailto:chaithanyakumar.ds@gmail.com?subject=[GitHub]SCK22/HelperFunctions)
+
+
 
 
 
