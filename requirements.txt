@@ -3,3 +3,5 @@ keras==2.3.1
 sklearn
 pandas==0.25.3
 plotly
+spacy==2.2.3
+https://github.com/explosion/spacy-models/releases/download/en_core_web_md-2.2.0/en_core_web_md-2.2.0.tar.gz#egg=en_core_web_md
