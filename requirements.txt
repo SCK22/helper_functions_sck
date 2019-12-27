@@ -1,5 +1,5 @@
 numpy==1.18.0
 keras==2.3.1
-scikit-learn==0.22
+sklearn
 pandas==0.25.3
 plotly

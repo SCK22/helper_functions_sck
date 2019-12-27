@@ -2,7 +2,6 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 # from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
@@ -40,18 +39,12 @@ class HelperFunctionsML:
 	
 	def set_X_validation(self, X_validation):
 		self.X_validation = X_validation
-
 	def set_y_train(self, y_train):
 		self.y_train = y_train
-
+	def set_y_train(self, y_train):
+		self.y_train  = y_train
 	def set_y_validation(self, y_validation):
 		self.y_validation = y_validation
-
-	def set_cat_cols(self, cat_cols):
-		self.cat_cols = cat_cols
-
-	def set_num_cols(self, num_cols):
-		self.num_cols = num_cols
 
 	def check_has_na_values(self):
 		has_na_values = True if np.sum(self.dataset.isnull().sum())>0 else False
@@ -110,14 +103,7 @@ class HelperFunctionsML:
 		else:
 			return self.dataset
 	
-	def setup_scaler_numeric_data(self):
-		scaler_obj = StandardScaler()	
-		scaler_obj.fit(self.dataset.loc[:,self.num_cols])
-		self.scaler_obj = scaler_obj
-	
-	def scale_numeric_data(self):
-		self.dataset.loc[:,self.num_cols] = self.scaler_obj.transform(self.dataset.loc[:,self.num_cols])
-	
+
 	def set_target_type(self, col_type):
 		if self.target is not None:
 			self.dataset.loc[:, [self.target]] = self.dataset.loc[:, [self.target]].astype(col_type)
