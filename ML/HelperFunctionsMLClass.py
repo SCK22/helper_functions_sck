@@ -56,6 +56,8 @@ class HelperFunctionsML:
 		"""This function returns the names of the Categorical and Nmeric attributes in the same order."""
 		cat_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype in ['O', 'object']]
 		num_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype not in ['O', 'object']]
+		self.cat_cols = cat_cols
+		self.num_cols = num_cols
 		return {"cat_cols" : cat_cols, "num_cols": num_cols}
 
 	@staticmethod
