@@ -28,7 +28,8 @@ create_dummy_data_frame
 
 Interested in using these functions? checkout my [ipython notebook](howtouse/How%20to%20use.ipynb) which outlines how these functions can be used.
 
-
+Want a more comprehensive example with model building?
+You can refer to my [kernel](https://www.kaggle.com/chaithanyakumar/modeling-with-titanic-data-using-helperfunctions) on Kaggle for the Titanic dataset, it is a simple and small dataset which allows us to concentrate more on how to use this module.
 Suggestions are welcome, please click here to send an email: [S.Chaithanya Kumar](mailto:chaithanyakumar.ds@gmail.com?subject=[GitHub]SCK22/HelperFunctions)
 
 
