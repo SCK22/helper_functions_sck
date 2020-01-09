@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.impute import SimpleImputer
 # from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 # from sklearn.svm import SVC, NuSVC
 # from sklearn.neural_network import MLPClassifier
@@ -28,38 +29,72 @@ class HelperFunctionsML:
 		self.dataset = dataset
 		self.target = None
 		self.col_names = self.dataset.columns
+		self.cat_num_extracted = False
+		self.dummies = False
 		self.nrows = dataset.shape[0]
 		self.ncols = dataset.shape[1]
+		self.actions_performed = {}
+
+
+	def update_actions_performed(self, dict_key, attributes = {}, needed_for_test = False):
+		self.actions_performed[dict_key] = {"attributes" : attributes, "needed_for_test" : needed_for_test }
 	# setter methods
 	def set_target(self, col_name):
 		self.target = col_name
+		self.update_actions_performed("set_target", attributes =  {"col_name" : col_name})
+		return "Succesfully set target column!"
 	
+	def test(self, col_name):
+		temp = getattr(self, "set_target")(col_name)
+		print("getattr(self.set_target)(col_name) : {}".format(temp))
+
 	def set_X_train(self, X_train):
 		self.X_train = X_train
+		self.update_actions_performed("set_X_train", attributes =  {"X_train" : X_train})
 	
 	def set_X_validation(self, X_validation):
 		self.X_validation = X_validation
+		self.update_actions_performed("set_X_validation", attributes =   {"X_validation" : X_validation})
 	def set_y_train(self, y_train):
 		self.y_train = y_train
-	def set_y_train(self, y_train):
-		self.y_train  = y_train
+		self.update_actions_performed("set_y_train", attributes =  {"y_train" : y_train})
+	
 	def set_y_validation(self, y_validation):
 		self.y_validation = y_validation
+		self.update_actions_performed("set_y_validation", attributes =  {"y_validation" : y_validation})
 
 	def check_has_na_values(self):
 		has_na_values = True if np.sum(self.dataset.isnull().sum())>0 else False
 		self.has_na_values = has_na_values
+		self.update_actions_performed("check_has_na_values")
+		if self.has_na_values:
+			print(self.dataset.isnull().sum())
+		else:
+			print("No Null values in the dataset.")
 		return has_na_values
 	
 	# @staticmethod
 	def cat_num_extract(self):
+		f_name = "cat_num_extract"
 		"""This function returns the names of the Categorical and Nmeric attributes in the same order."""
-		cat_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype in ['O', 'object']]
-		num_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype not in ['O', 'object']]
+		cat_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype in ['O', 'object'] and i != self.target]
+		num_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype not in ['O', 'object']and i != self.target]
 		self.cat_cols = cat_cols
 		self.num_cols = num_cols
+		self.cat_num_extracted = True
+		self.update_actions_performed(f_name)
 		return {"cat_cols" : cat_cols, "num_cols": num_cols}
-
+	
+	def get_cat_cols(self):
+		if not self.cat_num_extracted:
+			self.cat_num_extract()
+		return self.cat_cols
+	
+	def get_num_cols(self):
+		if not self.cat_num_extracted:
+			self.cat_num_extract()
+		return self.num_cols
+		
 	@staticmethod
 	def list_of_na_cols(dataset, per=0.3):
 		"""This function will return the columns with na values"""
@@ -74,47 +109,88 @@ class HelperFunctionsML:
 	def impute_categorical_cols(self, return_frames = False):
 		"""This function replaces the na values with the colum mode
 		This function might not be needed anymore as sklearn .22 has KNN imputation which I would prefer to use."""
+		f_name  = "impute_categorical_cols"
 		cat_cols = self.cat_num_extract()["cat_cols"]
 		if cat_cols:
-			self.dataset.loc[:,cat_cols].isnull
 			self.dataset.loc[:,cat_cols] = self.dataset.loc[:,cat_cols].apply(lambda x : x.fillna(value=self.get_mode(x)))
+		self.update_actions_performed(f_name)
+
+		if return_frames:
+			return self.dataset
+	
+	def set_imputer_numeric(self, strategy = "median"):
+		self.imputer_numeric = SimpleImputer(strategy = strategy)
+		self.actions_performed["set_imputer_numeric"] = {"attributes" : {"strategy" : "median"}}
+
+	def set_imputer_categorical(self, strategy = "most_frequent"):
+		self.imputer_categorical = SimpleImputer(strategy = strategy)
+		self.actions_performed["imputer_categorical"] = {"attributes" : {"strategy" : "most_frequent"}}
+	
+	def train_imputer_numeric(self):
+		self.imputer_numeric.fit(self.dataset.loc[:,self.num_cols])
+		self.update_actions_performed("train_imputer_numeric")
+	
+	def train_imputer_categorical(self):
+		self.imputer_categorical.fit(self.dataset.loc[:,self.cat_cols])
+		self.update_actions_performed("train_imputer_categorical")
+
+	def impute_numeric_cols(self,test_dataset= None, return_frames = False):
+		"""This function replaces the na values with the colum mean or median ,  based on the selection.
+		This function might not be needed anymore as sklearn .22 has KNN imputation which I would prefer to use."""
+		f_name = "impute_numeric_cols"
+		num_cols = self.cat_num_extract()["num_cols"]
+		print("num_cols : {}".format(num_cols))
+		if test_dataset is not None:
+			return self.imputer_numeric.transform(test_dataset.loc[:,num_cols])
+		else:
+			self.dataset.loc[:,num_cols] = self.imputer_numeric.transform(self.dataset.loc[:,num_cols])
+		self.update_actions_performed(dict_key = f_name, needed_for_test = True)
+		if return_frames:
+			return self.dataset
+	
+	def impute_categorical_cols(self,test_dataset= None, return_frames = False):
+		f_name = "impute_categorical_cols"
+		print("cat_cols : {}".format(self.cat_cols))
+		if test_dataset is not None:
+			return self.imputer_categorical.transform(test_dataset.loc[:,self.cat_cols])
+		else:
+			self.dataset.loc[:,self.cat_cols] = self.imputer_categorical.transform(self.dataset.loc[:,self.cat_cols])
+		self.update_actions_performed(dict_key = f_name, needed_for_test = True)
 		if return_frames:
 			return self.dataset
 
-	def impute_numeric_cols(self, method="median", return_frames = False):
-		"""This function replaces the na values with the colum mean or median ,  based on the selection.
-		Available values for method are "meidan",  "mean". default is median
-		This function might not be needed anymore as sklearn .22 has KNN imputation which I would prefer to use."""
-		num_cols = self.cat_num_extract()["num_cols"]
-		if num_cols and method == "mean":
-			self.dataset = self.dataset.loc[:,num_cols].apply(lambda x : x.fillna(value=x.mean()))
-		if num_cols and method == "median":
-			self.dataset = self.dataset.loc[:,num_cols].apply(lambda x : x.fillna(value=x.median()))
-		if return_frames:
-			return self.dataset
-	
-	def create_dummy_data_frame(self, categorical_attributes = None):
+	def create_dummy_data_frame(self, categorical_attributes = None, return_frames = False):
 		"""This function returns a dataframe of dummified colums Pass the dataset and the column names."""
 		if categorical_attributes is None:
-			categorical_attributes = self.cat_num_extract()["cat_cols"]
+			categorical_attributes = self.cat_cols
 			print("cat_cols : {}".format(categorical_attributes))
 		if categorical_attributes:
-			return (pd.get_dummies(self.dataset[categorical_attributes]))
+			dummy_df =pd.get_dummies(self.dataset.loc[:,categorical_attributes]) 
+			self.catergorical_dummies = dummy_df
+			self.update_actions_performed(dict_key = "create_dummy_data_frame", attributes = {"columns_present" : list(dummy_df.columns)}, needed_for_test = True)
+			self.dummies = True
+			if return_frames:
+				return dummy_df
 		else:
-			return self.dataset
-	
+			self.dummies = False
+			if return_frames:
+				return self.dataset
 
 	def set_target_type(self, col_type):
 		if self.target is not None:
 			self.dataset.loc[:, [self.target]] = self.dataset.loc[:, [self.target]].astype(col_type)
 		else:
 			print("target not set, call the function set_target with the name of the target column")
+	
+	def create_data_for_model(self):
+		if self.dummies:
+			self.model_data = pd.concat([self.dataset.loc[:, self.num_cols], self.catergorical_dummies, self.dataset.loc[:, self.target]], axis = 1)
 
 	def create_train_test_split(self, validation_size = 0.3, random_state= 42, return_frames= False):
-
+		self.create_data_for_model()
 		if self.target is not None:
-			X = self.dataset.loc[:, [i for i in self.col_names if i !=self.target]]
-			y = self.dataset.loc[:, [self.target]]
+			X = self.model_data.loc[:, [i for i in self.model_data.columns if i !=self.target]]
+			y = self.model_data.loc[:, [self.target]]
 			X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size = validation_size, random_state= random_state) 
 			self.X_train = X_train
 			self.X_validation = X_validation
@@ -127,33 +203,33 @@ class HelperFunctionsML:
 		if return_frames:
 			return X_train, X_validation, y_train, y_validation
 
-	def compute_mertics(self, pred_val):
+	def compute_mertics(self, preds, trues):
 		"""Compute various metrics"""
 		try:
-			acc_val = accuracy_score(y_pred=pred_val, y_true=self.y_validation)  # Accuracy for the validation set
+			acc = accuracy_score(y_pred=preds, y_true=trues)  # Accuracy for the passed set
 		except: 
-			acc_val = None
+			acc = None
 		try:
-			prec_val = precision_score(y_pred=pred_val, y_true=self.y_validation, average='macro')  # precision for the validation set
+			prec = precision_score(y_pred=preds, y_true=trues, average='macro')  # precision for the passed set
 		except: 
-			prec_val = None
+			prec = None
 		try:
-			rec_val = recall_score(y_pred=pred_val, y_true=self.y_validation, average='macro')  # recall for the validation set
+			rec = recall_score(y_pred=preds, y_true=trues, average='macro')  # recall for the passed set
 		except:
-			rec_val = None
+			rec = None
 		try:
-			f1_val = f1_score(y_pred=pred_val, y_true=self.y_validation)  # precision for the validation set
+			f1 = f1_score(y_pred=preds, y_true=trues)  # precision for the passed set
 		except: 
-			f1_val = None
+			f1 = None
 
 		model_performance = {}
-		model_performance["precision"] = prec_val
-		model_performance["f1_score"] = f1_val
-		model_performance["recall"] = rec_val
-		model_performance["accuracy"] = acc_val
+		model_performance["precision"] = prec
+		model_performance["f1_score"] = f1
+		model_performance["recall"] = rec
+		model_performance["accuracy"] = acc
 		return model_performance
-		
-
+	
+	
 	def apply_model_predict_validate(self, model_obj, model_name = None, feature_names= None):
 		"""This function
 		1.Applies the specified model to the train data.
@@ -167,19 +243,24 @@ class HelperFunctionsML:
 		
 		model_obj.fit(self.X_train.loc[:, feature_names], self.y_train)
 	 	# evaluation metrics
+
+		pred_train = model_obj.predict(self.X_train[feature_names])  # predict on the validation set 
 		pred_val = model_obj.predict(self.X_validation[feature_names])  # predict on the validation set
-		
-		model_performance = self.compute_mertics(pred_val)
+		performance = {}
+		performance["train"] = self.compute_mertics(pred_train, self.y_train)
+		performance["validation"] = self.compute_mertics(pred_val, self.y_validation)
 		if model_name is None:
 			try:
 				if "sklearn" in type(model_obj).__module__:
-					model_performance["model_obj"] = type(model_obj).__name__
+					performance["model_obj"] = type(model_obj).__name__
 			except:
-				model_performance["model_obj"] = model_obj
+				performance["model_obj"] = model_obj
+			print(pd.DataFrame(performance))
 		else:
-			model_performance["model_obj"] = model_name
+			performance["model_obj"] = model_name
 		# print("model_performance : {}".format(model_performance))
-		return(model_performance)
+		
+		return(performance)
 
 
 	def apply_log_reg(self, feature_names = None):
