@@ -5,20 +5,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.impute import SimpleImputer
-# from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-# from sklearn.svm import SVC, NuSVC
-# from sklearn.neural_network import MLPClassifier
-# from sklearn.neighbors import KNeighborsClassifier
-# from sklearn.gaussian_process import GaussianProcessClassifier
-# from sklearn.gaussian_process.kernels import RBF
-# from sklearn.ensemble import RandomForestClassifier,  AdaBoostClassifier
-# from sklearn.naive_bayes import GaussianNB
-# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-# from sklearn.ensemble import ExtraTreesClassifier
-# from sklearn.neighbors import NearestCentroid
-# from sklearn.linear_model import RidgeClassifier
-# from sklearn.linear_model import RidgeClassifierCV, LogisticRegressionCV, SGDClassifier, PassiveAggressiveClassifier
-# from sklearn.neighbors import RadiusNeighborsClassifier
 from sklearn.metrics import accuracy_score, recall_score, f1_score
 
 class HelperFunctionsML:
@@ -46,7 +32,7 @@ class HelperFunctionsML:
 	
 	def test(self, col_name):
 		temp = getattr(self, "set_target")(col_name)
-		print("getattr(self.set_target)(col_name) : {}".format(temp))
+		# print("getattr(self.set_target)(col_name) : {}".format(temp))
 
 	def set_X_train(self, X_train):
 		self.X_train = X_train
@@ -297,10 +283,7 @@ class HelperFunctionsML:
 		# df.reset_index()
 		return df
 
-
-
-
-
+	# Experimental
 	# Replace values in an attribute with other values
 	def replace_attribute_values(self, target_attribute, originals, replace_with):
 		"""Experimental:
@@ -312,127 +295,3 @@ class HelperFunctionsML:
 		elif len(originals != len(replace_with)):
 			raise ValueError("replacement values do not match the size of originals")
 		return 
-
-	# def import_models(self):
-	# 	"""Importing all models from sklearn classification."""
-		
-	# 	knn_model_3 = KNeighborsClassifier(3), 
-	# 	knn_model_5 = KNeighborsClassifier(5), 
-	# 	knn_model_7 = KNeighborsClassifier(7), 
-	# 	knn_model_9 = KNeighborsClassifier(9), 
-	# 	knn_model_11 = KNeighborsClassifier(11), 
-	# 	knn_model_13 = KNeighborsClassifier(15), 
-
-	# 	svm_linear=    SVC(kernel="linear",  C=0.025), 
-	# 	svm_rbf = SVC(gamma=2,  C=1), 
-	# 	gaussianprocess_model = GaussianProcessClassifier(1.0 * RBF(1.0)), 
-	# 	decisiontree_model = DecisionTreeClassifier(max_depth=5), 
-	# 	rf_model_10 = RandomForestClassifier(max_depth=5,  n_estimators=10,  max_features=1, verbose=True), 
-	# 	rf_model_100 = RandomForestClassifier(max_depth=5,  n_estimators=100,  max_features=1, verbose=True), 
-	# 	rf_model_250 = RandomForestClassifier(max_depth=5,  n_estimators=250,  max_features=1, verbose=True), 
-	# 	rf_model_500 = RandomForestClassifier(max_depth=5,  n_estimators=500,  max_features=1, verbose=True), 
-	# 	rf_model_750 = RandomForestClassifier(max_depth=5,  n_estimators=750,  max_features=1, verbose=True), 
-	# 	rf_model_1000 = RandomForestClassifier(max_depth=5,  n_estimators=1000,  max_features=1, verbose=True), 
-	# 	mlp_model = MLPClassifier(alpha=1, verbose=True), 
-	# 	mlp_model_adaptive_learning = MLPClassifier(alpha=1, verbose=True, learning_rate = "adaptive", shuffle=True, validation_fraction= 0.3, hidden_layer_sizes = (100, 50, 100, 50)), 
-	# 	adaboost_model_10 = AdaBoostClassifier(n_estimators = 10), 
-	# 	adaboost_model_50 = AdaBoostClassifier(n_estimators = 50), 
-	# 	adaboost_model_100 = AdaBoostClassifier(n_estimators = 100), 
-	# 	adaboost_model_150 = AdaBoostClassifier(n_estimators = 150), 
-	# 	adaboost_model_200 = AdaBoostClassifier(n_estimators = 200), 
-	# 	adaboost_model_250 = AdaBoostClassifier(n_estimators = 250), 
-	# 	adaboost_model_500 = AdaBoostClassifier(n_estimators = 500), 
-	# 	adaboost_model_750 = AdaBoostClassifier(n_estimators = 750), 
-	# 	adaboost_model_1000 = AdaBoostClassifier(n_estimators = 1000), 
-	# 	adaboost_model_2000= AdaBoostClassifier(n_estimators = 2000), 
-	# 	adaboost_model_3000= AdaBoostClassifier(n_estimators = 3000), 
-	# 	adaboost_model_4000= AdaBoostClassifier(n_estimators = 4000), 
-	# 	naive_bayes_model = GaussianNB(), 
-	# 	quadrant_discriminant_analysis_model = QuadraticDiscriminantAnalysis(), 
-	# 	linear_discriminant_analysis_model = LinearDiscriminantAnalysis(), 
-	# 	# Passive_Aggressive_Classifier= PassiveAggressiveClassifier(C=1.0,  fit_intercept=True,  max_iter=None,  tol=None,  shuffle=True,  verbose=0,  n_jobs=1, 
-	# 	#  random_state=None,  warm_start=False,  class_weight = None,  average=False,  n_iter=None), 
-	# 	SGD_Classifier =SGDClassifier(), 
-	# 	Radius_Neighbours_classifier = RadiusNeighborsClassifier(), 
-	# 	Ridge_classifier_cv = RidgeClassifierCV(), 
-	# 	Etree_Classifier=ExtraTreesClassifier(), 
-	# 	Nu_svc = NuSVC(), 
-	# 	models_dict = {'knn_model_3':knn_model_3, 
-	# 					"knn_model_5":knn_model_5, 
-	# 					"knn_model_7":knn_model_7, 
-	# 					"knn_model_9":knn_model_9, 
-	# 					"knn_model_11":knn_model_11, 
-	# 					"knn_model_13":knn_model_13, 
-	# 					'svm_linear':svm_linear, 
-	# 					'svm_rbf':svm_rbf, 
-	# 					#'gaussianprocess_model':gaussianprocess_model, 
-	# 					'decisiontree_model':decisiontree_model, 
-	# 					'rf_model_10':rf_model_10, 
-	# 					'rf_model_100':rf_model_100, 
-	# 					'rf_model_250':rf_model_250, 
-	# 					'rf_model_500':rf_model_500, 
-	# 					'rf_model_750':rf_model_750, 
-	# 					'rf_model_1000':rf_model_1000, 
-	# 					'mlp_model':mlp_model, 
-	# 					'mlp_model_adaptive_learning':mlp_model_adaptive_learning, 
-	# 					'adaboost_model':adaboost_model_10, 
-	# 					"adaboost_model_50":adaboost_model_50, 
-	# 					"adaboost_model_100":adaboost_model_100, 
-	# 					"adaboost_model_150":adaboost_model_150, 
-	# 					"adaboost_model_200":adaboost_model_200, 
-	# 					"adaboost_model_250":adaboost_model_250, 
-	# 					"adaboost_model_500":adaboost_model_500, 
-	# 					"adaboost_model_750":adaboost_model_750, 
-	# 					"adaboost_model_1000":adaboost_model_1000, 
-	# 					"adaboost_model_2000":adaboost_model_2000, 
-	# 					"adaboost_model_3000":adaboost_model_3000, 
-	# 					# "adaboost_model_1000_2":adaboost_model_1000_2, 
-	# 					# "adaboost_model_1000_5":adaboost_model_1000_5, 
-	# 					# "adaboost_model_1000_10":adaboost_model_1000_10, 
-	# 					'naive_bayes_model':naive_bayes_model, 
-	# 					'quadrant_discriminant_analysis_model':quadrant_discriminant_analysis_model, 
-	# 					#'linear_discriminant_analysis_model':linear_discriminant_analysis_model
-	# 					# "Passive_Aggressive_Classifier":Passive_Aggressive_Classifier, 
-	# 					"SGD_Classifier":SGD_Classifier, 
-	# 					"Radius_Neighbours_classifier":Radius_Neighbours_classifier, 
-	# 					"Ridge_classifier_cv":Ridge_classifier_cv, 
-	# 					"Etree_Classifier":Etree_Classifier, 
-	# 					"Nu_svc":Nu_svc
-	# 					}
-	# 	return(models_dict)
-
-	#
-	# def h2o_models():
-	# 	import h2o
-	# 	h2o.init()
-	# 	from h2o.estimators import *
-	# 	h2o_gbe = h2o.estimators.gbm.H2OGradientBoostingEstimator(model_id=None, 
-	#                                                 distribution=None, 
-	#                                                 quantile_alpha=None, 
-	#                                                 tweedie_power=None, 
-	#                                                 ntrees=100, 
-	#                                                 max_depth=100, 
-	#                                                 min_rows=None, 
-	#                                                 learn_rate=0.01, 
-	#                                                 nbins=None, 
-	#                                                 sample_rate=0.9, 
-	#                                                 col_sample_rate=0.3, 
-	#                                                 col_sample_rate_per_tree=None, 
-	#                                                 nbins_top_level=None, 
-	#                                                 nbins_cats=None, 
-	#                                                 balance_classes=None, 
-	#                                                 max_after_balance_size=None, 
-	#                                                 seed=1234, 
-	#                                                 build_tree_one_node=None, 
-	#                                                 nfolds=5, 
-	#                                                 fold_assignment=None, 
-	#                                                 keep_cross_validation_predictions=True, 
-	#                                                 stopping_rounds=None, 
-	#                                                 stopping_metric="misclassification", 
-	#                                                 stopping_tolerance=None, 
-	#                                                 score_each_iteration=None, 
-	#                                                 score_tree_interval=None, 
-	#                                                 checkpoint=None)
-	#
-	# 	models_dict = {'h2o_gbe':h2o_gbe, 
-	# 	}
