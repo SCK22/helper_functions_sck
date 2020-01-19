@@ -171,7 +171,8 @@ class HelperFunctionsML:
 	def create_data_for_model(self):
 		if self.dummies:
 			self.model_data = pd.concat([self.dataset.loc[:, self.num_cols], self.catergorical_dummies, self.dataset.loc[:, self.target]], axis = 1)
-
+		else:
+			self.model_data = self.dataset
 	def create_train_test_split(self, validation_size = 0.3, random_state= 42, return_frames= False):
 		self.create_data_for_model()
 		if self.target is not None:
