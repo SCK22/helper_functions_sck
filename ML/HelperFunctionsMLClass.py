@@ -21,6 +21,7 @@ class HelperFunctionsML:
 		self.ncols = dataset.shape[1]
 		self.actions_performed = {}
 		self.model_columns = []
+		self.model = None
 
 	def update_actions_performed(self, dict_key, attributes = {}, needed_for_test = False):
 		self.actions_performed[dict_key] = {"attributes" : attributes, "needed_for_test" : needed_for_test }
@@ -104,9 +105,6 @@ class HelperFunctionsML:
 		values, counts = np.unique(x.dropna(), return_counts=True)
 		m = counts.argmax()
 		return values[m]
-
-		if return_frames:
-			return self.dataset
 	
 	def set_imputer_numeric(self, strategy = "median"):
 		self.imputer_numeric = SimpleImputer(strategy = strategy)
@@ -229,10 +227,13 @@ class HelperFunctionsML:
 		4.Returns the predictions along with some scores.
 		"""
 		if feature_names is None:
-			self.model_columns.extend(cat_cols)
-			self.model_columns.extend(num_cols)
+			if self.cat_num_extracted == False:
+				self.cat_num_extract()
+			self.model_columns.extend(self.cat_cols)
+			self.model_columns.extend(self.num_cols)
 			feature_names = self.model_columns
 		# fit the model
+		self.model = model_obj
 		model_obj.fit(self.X_train.loc[:, feature_names], self.y_train)
 	 	# evaluation metrics
 		pred_train = model_obj.predict(self.X_train[feature_names])  # predict on the validation set 
