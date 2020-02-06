@@ -20,7 +20,7 @@ class HelperFunctionsML:
 		self.nrows = dataset.shape[0]
 		self.ncols = dataset.shape[1]
 		self.actions_performed = {}
-
+		self.model_columns = []
 
 	def update_actions_performed(self, dict_key, attributes = {}, needed_for_test = False):
 		self.actions_performed[dict_key] = {"attributes" : attributes, "needed_for_test" : needed_for_test }
@@ -41,6 +41,7 @@ class HelperFunctionsML:
 	def set_X_validation(self, X_validation):
 		self.X_validation = X_validation
 		self.update_actions_performed("set_X_validation", attributes =   {"X_validation" : X_validation})
+
 	def set_y_train(self, y_train):
 		self.y_train = y_train
 		self.update_actions_performed("set_y_train", attributes =  {"y_train" : y_train})
@@ -73,13 +74,25 @@ class HelperFunctionsML:
 	
 	def get_cat_cols(self):
 		if not self.cat_num_extracted:
+			print("Running cat_num_extract")
 			self.cat_num_extract()
 		return self.cat_cols
-	
+	def extend_cat_cols(self, new_cols = []):
+		if not self.cat_num_extracted:
+			print("Running cat_num_extract")
+			self.cat_num_extract()
+		self.cat_cols.extend(new_cols)
+
 	def get_num_cols(self):
 		if not self.cat_num_extracted:
 			self.cat_num_extract()
 		return self.num_cols
+	
+	def extend_num_cols(self, new_cols = []):
+		if not self.cat_num_extracted:
+			print("Running cat_num_extract")
+			self.cat_num_extract()
+		self.cat_cols.extend(new_cols)
 		
 	@staticmethod
 	def list_of_na_cols(dataset, per=0.3):
@@ -91,15 +104,6 @@ class HelperFunctionsML:
 		values, counts = np.unique(x.dropna(), return_counts=True)
 		m = counts.argmax()
 		return values[m]
-
-	def impute_categorical_cols(self, return_frames = False):
-		"""This function replaces the na values with the colum mode
-		This function might not be needed anymore as sklearn .22 has KNN imputation which I would prefer to use."""
-		f_name  = "impute_categorical_cols"
-		cat_cols = self.cat_num_extract()["cat_cols"]
-		if cat_cols:
-			self.dataset.loc[:,cat_cols] = self.dataset.loc[:,cat_cols].apply(lambda x : x.fillna(value=self.get_mode(x)))
-		self.update_actions_performed(f_name)
 
 		if return_frames:
 			return self.dataset
@@ -173,6 +177,7 @@ class HelperFunctionsML:
 			self.model_data = pd.concat([self.dataset.loc[:, self.num_cols], self.catergorical_dummies, self.dataset.loc[:, self.target]], axis = 1)
 		else:
 			self.model_data = self.dataset
+	
 	def create_train_test_split(self, validation_size = 0.3, random_state= 42, return_frames= False):
 		self.create_data_for_model()
 		if self.target is not None:
@@ -214,8 +219,7 @@ class HelperFunctionsML:
 		model_performance["f1_score"] = f1
 		model_performance["recall"] = rec
 		model_performance["accuracy"] = acc
-		return model_performance
-	
+		return model_performance	
 	
 	def apply_model_predict_validate(self, model_obj, model_name = None, feature_names= None):
 		"""This function
@@ -225,12 +229,12 @@ class HelperFunctionsML:
 		4.Returns the predictions along with some scores.
 		"""
 		if feature_names is None:
-			feature_names = self.X_train.columns
-		# apply the model
-		
+			self.model_columns.extend(cat_cols)
+			self.model_columns.extend(num_cols)
+			feature_names = self.model_columns
+		# fit the model
 		model_obj.fit(self.X_train.loc[:, feature_names], self.y_train)
 	 	# evaluation metrics
-
 		pred_train = model_obj.predict(self.X_train[feature_names])  # predict on the validation set 
 		pred_val = model_obj.predict(self.X_validation[feature_names])  # predict on the validation set
 		performance = {}
@@ -245,10 +249,8 @@ class HelperFunctionsML:
 			print(pd.DataFrame(performance))
 		else:
 			performance["model_obj"] = model_name
-		# print("model_performance : {}".format(model_performance))
-		
+		# print("model_performance : {}".format(model_performance))	
 		return(performance)
-
 
 	def apply_log_reg(self, feature_names = None):
 		"""apply basic logistic regression model"""
