@@ -5,6 +5,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
 from sklearn.metrics import accuracy_score, recall_score, f1_score
 
 class HelperFunctionsML:
@@ -65,19 +69,12 @@ class HelperFunctionsML:
 	def cat_num_extract(self):
 		f_name = "cat_num_extract"
 		"""This function returns the names of the Categorical and Nmeric attributes in the same order."""
-		cat_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype in ['O', 'object'] and i != self.target]
-		num_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype not in ['O', 'object']and i != self.target]
-		self.cat_cols = cat_cols
-		self.num_cols = num_cols
+		self.cat_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype in ['O', 'object'] and i != self.target]
+		self.num_cols = [i for i in self.dataset.columns.values if self.dataset[i].dtype in ['int', 'float'] and i != self.target]
 		self.cat_num_extracted = True
 		self.update_actions_performed(f_name)
-		return {"cat_cols" : cat_cols, "num_cols": num_cols}
+		return {"cat_cols" : self.cat_cols, "num_cols": self.num_cols}
 	
-	def get_cat_cols(self):
-		if not self.cat_num_extracted:
-			print("Running cat_num_extract")
-			self.cat_num_extract()
-		return self.cat_cols
 	def extend_cat_cols(self, new_cols = []):
 		if not self.cat_num_extracted:
 			print("Running cat_num_extract")
@@ -85,10 +82,9 @@ class HelperFunctionsML:
 		self.cat_cols.extend(new_cols)
 
 	def get_num_cols(self):
-		if not self.cat_num_extracted:
-			self.cat_num_extract()
-		return self.num_cols
-	
+		return self.cat_num_extract()["num_cols"]
+	def get_cat_cols(self):
+		return self.cat_num_extract()["cat_cols"]
 	def extend_num_cols(self, new_cols = []):
 		if not self.cat_num_extracted:
 			print("Running cat_num_extract")
@@ -105,6 +101,24 @@ class HelperFunctionsML:
 		values, counts = np.unique(x.dropna(), return_counts=True)
 		m = counts.argmax()
 		return values[m]
+	
+	def numeric_pipeline(self,strategy = "median"):
+		numeric_transformer = Pipeline(steps=[
+    	('imputer', SimpleImputer(strategy=strategy)),
+    	('scaler', StandardScaler())])
+		self.numeric_transformer = numeric_transformer
+
+	def categorical_pipeline(self,strategy = "most_frequent"):
+		categorical_transformer = Pipeline(steps=[
+		('imputer', SimpleImputer(strategy=strategy,fill_value="missing_value")),
+    	('onehot', OneHotEncoder(handle_unknown='ignore'))])
+		self.categorical_transformer = categorical_transformer
+
+	def set_pipeline(self):
+		self.preprocessor  = ColumnTransformer(
+    	transformers=[
+        ('num', self.numeric_transformer	, self.num_cols),
+        ('cat', self.categorical_transformer, self.cat_cols)])
 	
 	def set_imputer_numeric(self, strategy = "median"):
 		self.imputer_numeric = SimpleImputer(strategy = strategy)
@@ -170,14 +184,15 @@ class HelperFunctionsML:
 		else:
 			print("target not set, call the function set_target with the name of the target column")
 	
-	def create_data_for_model(self):
-		if self.dummies:
-			self.model_data = pd.concat([self.dataset.loc[:, self.num_cols], self.catergorical_dummies, self.dataset.loc[:, self.target]], axis = 1)
-		else:
-			self.model_data = self.dataset
+	# def create_data_for_model(self):
+	# 	if self.dummies:
+	# 		self.model_data = pd.concat([self.dataset.loc[:, self.num_cols], self.catergorical_dummies, self.dataset.loc[:, self.target]], axis = 1)
+	# 	else:
+	# 		self.model_data = self.dataset
 	
 	def create_train_test_split(self, validation_size = 0.3, random_state= 42, return_frames= False):
-		self.create_data_for_model()
+		# self.create_data_for_model()
+		self.model_data = self.dataset
 		if self.target is not None:
 			X = self.model_data.loc[:, [i for i in self.model_data.columns if i !=self.target]]
 			y = self.model_data.loc[:, [self.target]]
@@ -226,31 +241,41 @@ class HelperFunctionsML:
 		3.Predicts on the test dataset
 		4.Returns the predictions along with some scores.
 		"""
-		if feature_names is None:
-			if self.cat_num_extracted == False:
-				self.cat_num_extract()
-			self.model_columns.extend(self.cat_cols)
-			self.model_columns.extend(self.num_cols)
-			feature_names = self.model_columns
+		# if feature_names is None:
+		# 	feature_names = []
+		# 	feature_names = self.num_cols
+		# 	feature_names.extend(self.cat_cols)
+		# 	print("feature_names", feature_names)
+		# 	if self.cat_num_extracted == False:
+		# 		self.cat_num_extract()
+		# 	self.model_columns.extend(self.cat_cols)
+		# 	self.model_columns.extend(self.num_cols)
+		# 	feature_names = self.model_columns
+		# print("Using {} columns for model building".format(feature_names))
 		# fit the model
+		self.create_train_test_split()
+		# self.numeric_pipeline()
+		# self.categorical_pipeline()
+		# self.set_pipeline()
+		model_obj = Pipeline(steps=[('preprocessor', self.preprocessor),('classifier', model_obj)])
 		self.model = model_obj
-		model_obj.fit(self.X_train.loc[:, feature_names], self.y_train)
+		self.model.fit(self.X_train, self.y_train)
 	 	# evaluation metrics
-		pred_train = model_obj.predict(self.X_train[feature_names])  # predict on the validation set 
-		pred_val = model_obj.predict(self.X_validation[feature_names])  # predict on the validation set
+		pred_train = self.model.predict(self.X_train)  # predict on the validation set 
+		pred_val = self.model.predict(self.X_validation)  # predict on the validation set
 		performance = {}
 		performance["train"] = self.compute_mertics(pred_train, self.y_train)
 		performance["validation"] = self.compute_mertics(pred_val, self.y_validation)
 		if model_name is None:
 			try:
-				if "sklearn" in type(model_obj).__module__:
-					performance["model_obj"] = type(model_obj).__name__
+				if "sklearn" in type(self.model).__module__:
+					performance["model_obj"] = type(self.model).__name__
 			except:
-				performance["model_obj"] = model_obj
-			print(pd.DataFrame(performance))
+				performance["model_obj"] = self.model
 		else:
 			performance["model_obj"] = model_name
 		# print("model_performance : {}".format(model_performance))	
+		print(pd.DataFrame(performance))
 		return(performance)
 
 	def apply_log_reg(self, feature_names = None):
