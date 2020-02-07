@@ -254,9 +254,9 @@ class HelperFunctionsML:
 		# print("Using {} columns for model building".format(feature_names))
 		# fit the model
 		self.create_train_test_split()
-		# self.numeric_pipeline()
-		# self.categorical_pipeline()
-		# self.set_pipeline()
+		self.numeric_pipeline()
+		self.categorical_pipeline()
+		self.set_pipeline()
 		model_obj = Pipeline(steps=[('preprocessor', self.preprocessor),('classifier', model_obj)])
 		self.model = model_obj
 		self.model.fit(self.X_train, self.y_train)
