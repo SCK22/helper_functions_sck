@@ -115,8 +115,6 @@ class HelperFunctionsML:
 		self.categorical_transformer = categorical_transformer
 
 	def set_pipeline(self):
-		self.numeric_pipeline()
-		self.categorical_pipeline()
 		self.preprocessor  = ColumnTransformer(
     	transformers=[
         ('num', self.numeric_transformer	, self.num_cols),
