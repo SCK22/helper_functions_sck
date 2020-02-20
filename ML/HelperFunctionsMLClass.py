@@ -262,7 +262,9 @@ class HelperFunctionsML:
 		self.model.fit(self.X_train, self.y_train)
 	 	# evaluation metrics
 		pred_train = self.model.predict(self.X_train)  # predict on the validation set 
+		self.pred_train = pred_train
 		pred_val = self.model.predict(self.X_validation)  # predict on the validation set
+		self.pred_val = pred_val
 		performance = {}
 		performance["train"] = self.compute_mertics(pred_train, self.y_train)
 		performance["validation"] = self.compute_mertics(pred_val, self.y_validation)
