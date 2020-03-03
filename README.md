@@ -27,7 +27,7 @@ create_dummy_data_frame
 
 Interested in using these functions? checkout my [ipython notebook](howtouse/How%20to%20use.ipynb) which outlines how these functions can be used.
 
-
+I used the functions in this repository for analysis and model building, you can refer to the github code here[https://github.com/SCK22/CustomerEngagement]
 Suggestions are welcome, please click here to send an email: [S.Chaithanya Kumar](mailto:chaithanyakumar.ds@gmail.com?subject=[GitHub]SCK22/HelperFunctions)
 
 
