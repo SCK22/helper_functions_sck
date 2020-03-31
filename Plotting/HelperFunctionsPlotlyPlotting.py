@@ -133,3 +133,18 @@ def plot_multi_box(dataframe, col_name, num_col_name):
     layout = go.Layout(title="Boxplot of levels in {} for {} column".format(col_name, num_col_name))
     fig = go.Figure(data=data, layout=layout)
     return (iplot(fig))
+
+def plot_grouped_bar(dataframe,index_col, col1, col2):
+    """Plot multiple box plots based on the levels in a column"""
+    x = f_score_coparision[index_col]
+    y1 = f_score_coparision[col1]
+    y2 = f_score_coparision[col2]
+    text_y1 = np.round(y1, 2)
+    text_y2 = np.round(y2, 2)
+    data=[
+        go.Bar(name='raw', x=x, y=y1, text = text_y1, textposition='auto'),
+        go.Bar(name='shadow removed', x=x, y=y2, text = text_y2, textposition='auto'),
+    ]
+    fig.update_layout(barmode='group', title = "Grouped bar chart for {} and {} columns, compared on {}".format(col1, col2,index_col))
+
+    return (iplot(fig))
