@@ -10,12 +10,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.tree import DecisionTreeClassifier
+from typing import Union
 
 
 class HelperFunctionsML:
     """Helper functions for Machine Learning and EDA"""
 
-    def __init__(self, dataset):
+    def __init__(self, dataset) -> None:
         """Helper Functions to do ML"""
         self._createdat = datetime.now
         self.dataset = dataset
@@ -25,11 +26,17 @@ class HelperFunctionsML:
         self.dummies = False
         self.nrows = dataset.shape[0]
         self.ncols = dataset.shape[1]
-        self.actions_performed = {}
-        self.model_columns = []
+        self.actions_performed: dict = {}
+        self.model_columns: list = []
         self.model = None
         self.train_test_split_created = False
         self.pos_label = None
+        self.X_train: pd.DataFrame = pd.DataFrame()
+        self.y_train: pd.DataFrame = pd.DataFrame()
+        self.X_test: pd.DataFrame = pd.DataFrame()
+        self.y_test: pd.DataFrame = pd.DataFrame()
+        self.X_validation: pd.DataFrame = pd.DataFrame()
+        self.y_validation: pd.DataFrame = pd.DataFrame()
 
     def update_actions_performed(
         self, dict_key, attributes={}, needed_for_test=False
@@ -40,7 +47,6 @@ class HelperFunctionsML:
         }
 
     # setter methods
-
     def set_target(self, col_name) -> None:
         self.target = col_name
         self.update_actions_performed("set_target", attributes={"col_name": col_name})
@@ -53,33 +59,33 @@ class HelperFunctionsML:
         )
         print("Succesfully set pos_label!")
 
-    def test(self, col_name):
+    def test(self, col_name) -> None:
         temp = getattr(self, "set_target")(col_name)
         print("getattr(self.set_target)(col_name) : {}".format(temp))
 
-    def set_X_train(self, X_train):
+    def set_X_train(self, X_train) -> None:
         """If you want to add a train dataset separately, use can this function"""
         self.X_train = X_train
         self.update_actions_performed("set_X_train", attributes={"X_train": X_train})
 
-    def set_X_validation(self, X_validation):
+    def set_X_validation(self, X_validation) -> None:
         """If you want to add validation dataset separately, use can this function"""
         self.X_validation = X_validation
         self.update_actions_performed(
             "set_X_validation", attributes={"X_validation": X_validation}
         )
 
-    def set_y_train(self, y_train):
+    def set_y_train(self, y_train) -> None:
         self.y_train = y_train
         self.update_actions_performed("set_y_train", attributes={"y_train": y_train})
 
-    def set_y_validation(self, y_validation):
+    def set_y_validation(self, y_validation) -> None:
         self.y_validation = y_validation
         self.update_actions_performed(
             "set_y_validation", attributes={"y_validation": y_validation}
         )
 
-    def check_has_na_values(self, return_cols_with_na_values=False):
+    def check_has_na_values(self, return_cols_with_na_values=False) -> bool:
         """Check and return the columns with na values in the dateset"""
         has_na_values = True if np.sum(self.dataset.isnull().sum()) > 0 else False
         self.has_na_values = has_na_values
@@ -91,7 +97,7 @@ class HelperFunctionsML:
         return has_na_values
 
     # @staticmethod
-    def cat_num_extract(self):
+    def cat_num_extract(self) -> dict:
         f_name = "cat_num_extract"
         """This function returns the names of the Categorical and Nmeric attributes in the same order."""
         self.cat_cols = [
@@ -108,37 +114,37 @@ class HelperFunctionsML:
         self.update_actions_performed(f_name)
         return {"cat_cols": self.cat_cols, "num_cols": self.num_cols}
 
-    def extend_cat_cols(self, new_cols=[]):
+    def extend_cat_cols(self, new_cols=[]) -> None:
         # if not self.cat_num_extracted:
         # 	print("Running cat_num_extract")
         # 	self.cat_num_extract()
         self.cat_cols.extend(new_cols)
 
-    def get_num_cols(self):
+    def get_num_cols(self) -> int:
         if not self.cat_num_extracted:
             self.cat_num_extract()
         return len(self.num_cols)
 
-    def get_cat_cols(self):
+    def get_cat_cols(self) -> int:
         if not self.cat_num_extracted:
             self.cat_num_extract()
         return len(self.cat_cols)
 
-    def extend_num_cols(self, new_cols=[]):
+    def extend_num_cols(self, new_cols=[]) -> None:
         self.cat_cols.extend(new_cols)
 
     @staticmethod
-    def list_of_na_cols(dataset, per=0.3):
+    def list_of_na_cols(dataset: pd.DataFrame, per=0.3) -> list:
         """This function will return the columns with na values"""
         na_cols = dataset.isnull().sum()[dataset.isnull().sum() > per]
         return list(na_cols.index)
 
-    def get_mode(self, x):
+    def get_mode(self, x) -> Union[int, float, str]:
         values, counts = np.unique(x.dropna(), return_counts=True)
         m = counts.argmax()
         return values[m]
 
-    def numeric_pipeline(self, strategy="median"):
+    def numeric_pipeline(self, strategy="median") -> None:
         numeric_transformer = Pipeline(
             steps=[
                 ("imputer", SimpleImputer(strategy=strategy)),
@@ -147,7 +153,7 @@ class HelperFunctionsML:
         )
         self.numeric_transformer = numeric_transformer
 
-    def categorical_pipeline(self, strategy="most_frequent"):
+    def categorical_pipeline(self, strategy="most_frequent") -> None:
         categorical_transformer = Pipeline(
             steps=[
                 (
@@ -159,7 +165,7 @@ class HelperFunctionsML:
         )
         self.categorical_transformer = categorical_transformer
 
-    def set_pipeline(self):
+    def set_pipeline(self) -> None:
         self.preprocessor = ColumnTransformer(
             transformers=[
                 ("num", self.numeric_transformer, self.num_cols),
@@ -168,39 +174,41 @@ class HelperFunctionsML:
         )
 
     @property
-    def imputer_numeric(self) -> None:
+    def imputer_numeric(self) -> SimpleImputer:
         print("Numeric Imputer")
         return self.imputer_numeric
 
     @imputer_numeric.setter
-    def imputer_numeric(self, strategy="median"):
+    def imputer_numeric(self, strategy="median") -> None:
         self.imputer_numeric = SimpleImputer(strategy=strategy)
         self.actions_performed["set_imputer_numeric"] = {
             "attributes": {"strategy": "median"}
         }
 
     @property
-    def imputer_categorical(self):
+    def imputer_categorical(self) -> SimpleImputer:
         print("Numeric Imputer")
         return self.imputer_categorical
 
     @imputer_categorical.setter
-    def imputer_categorical(self, strategy="most_frequent"):
+    def imputer_categorical(self, strategy="most_frequent") -> None:
         self.imputer_categorical = SimpleImputer(strategy=strategy)
         self.actions_performed["imputer_categorical"] = {
             "attributes": {"strategy": "most_frequent"}
         }
 
-    def train_imputer_numeric(self):
+    def train_imputer_numeric(self) -> None:
 
         self.imputer_numeric.fit(self.dataset.loc[:, self.num_cols])
         self.update_actions_performed("train_imputer_numeric")
 
-    def train_imputer_categorical(self):
+    def train_imputer_categorical(self) -> None:
         self.imputer_categorical.fit(self.dataset.loc[:, self.cat_cols])
         self.update_actions_performed("train_imputer_categorical")
 
-    def impute_numeric_cols(self, test_dataset=None, return_frames=False):
+    def impute_numeric_cols(
+        self, test_dataset=None, return_frames=False
+    ) -> pd.DataFrame:
         """This function replaces the na values with the colum mean or median ,  based on the selection.
         This function might not be needed anymore as sklearn .22 has KNN imputation which I would prefer to use."""
         f_name = "impute_numeric_cols"
@@ -216,7 +224,9 @@ class HelperFunctionsML:
         if return_frames:
             return self.dataset
 
-    def impute_categorical_cols(self, test_dataset=None, return_frames=False):
+    def impute_categorical_cols(
+        self, test_dataset=None, return_frames=False
+    ) -> pd.DataFrame:
         assert self.cat_num_extracted
         f_name = "impute_categorical_cols"
         print("cat_cols : {}".format(self.cat_cols))
@@ -232,7 +242,9 @@ class HelperFunctionsML:
         if return_frames:
             return self.dataset
 
-    def create_dummy_data_frame(self, categorical_attributes=None, return_frames=False):
+    def create_dummy_data_frame(
+        self, categorical_attributes=None, return_frames=False
+    ) -> Union[None, pd.DataFrame]:
         """This function returns a dataframe of dummified colums Pass the dataset and the column names."""
         if categorical_attributes is None:
             categorical_attributes = self.cat_cols
@@ -253,7 +265,7 @@ class HelperFunctionsML:
             if return_frames:
                 return self.dataset
 
-    def set_target_type(self, col_type):
+    def set_target_type(self, col_type) -> None:
         if self.target is not None:
             self.dataset.loc[:, [self.target]] = self.dataset.loc[
                 :, [self.target]
@@ -277,7 +289,7 @@ class HelperFunctionsML:
         validation_size=0.3,
         random_state=42,
         return_frames=False,
-    ):
+    ) -> Union[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         # self.create_data_for_model()
         self.model_data = self.dataset
         if self.target is not None:
@@ -307,7 +319,7 @@ class HelperFunctionsML:
         if return_frames:
             return X_train, X_validation, y_train, y_validation
 
-    def compute_mertics(self, preds, trues):
+    def compute_mertics(self, preds, trues) -> dict:
         """Compute various metrics"""
         try:
             acc = accuracy_score(
