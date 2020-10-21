@@ -24,9 +24,7 @@ class TextProcessingClass:
 
     def get_word_vector(self):
 
-        doc_text_vector_exists = {
-            ent.text: str(ent.has_vector) for ent in self.doc.ents
-        }
+        doc_text_vector_exists = {ent.text: str(ent.has_vector) for ent in self.doc.ents}
         doc_text_vector = {ent.text: str(ent.vector) for ent in self.doc.ents}
         doc_text_vector_norm = {ent.text: str(ent.vector_norm) for ent in self.doc.ents}
         print("doc_text_vector : {}".format(doc_text_vector))

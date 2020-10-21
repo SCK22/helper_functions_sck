@@ -30,16 +30,12 @@ app.layout = html.Div(
                     [
                         dcc.Dropdown(
                             id="xaxis-column",
-                            options=[
-                                {"label": i, "value": i} for i in available_indicators
-                            ],
+                            options=[{"label": i, "value": i} for i in available_indicators],
                             value="Fertility rate, total (births per woman)",
                         ),
                         dcc.RadioItems(
                             id="xaxis-type",
-                            options=[
-                                {"label": i, "value": i} for i in ["Linear", "Log"]
-                            ],
+                            options=[{"label": i, "value": i} for i in ["Linear", "Log"]],
                             value="Linear",
                             labelStyle={"display": "inline-block"},
                         ),
@@ -50,16 +46,12 @@ app.layout = html.Div(
                     [
                         dcc.Dropdown(
                             id="yaxis-column",
-                            options=[
-                                {"label": i, "value": i} for i in available_indicators
-                            ],
+                            options=[{"label": i, "value": i} for i in available_indicators],
                             value="Life expectancy at birth, total (years)",
                         ),
                         dcc.RadioItems(
                             id="yaxis-type",
-                            options=[
-                                {"label": i, "value": i} for i in ["Linear", "Log"]
-                            ],
+                            options=[{"label": i, "value": i} for i in ["Linear", "Log"]],
                             value="Linear",
                             labelStyle={"display": "inline-block"},
                         ),

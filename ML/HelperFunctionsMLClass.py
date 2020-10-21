@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -10,14 +11,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.tree import DecisionTreeClassifier
-from typing import Union
+from .data_properties import DataProperties
 
-
-class HelperFunctionsML:
+class HelperFunctionsML(DataProperties):
     """Helper functions for Machine Learning and EDA"""
 
     def __init__(self, dataset) -> None:
         """Helper Functions to do ML"""
+        super().__init__()
+        print(self.cols_for_models)
         self._createdat = datetime.now
         self.dataset = dataset
         self.target = None
@@ -31,16 +33,32 @@ class HelperFunctionsML:
         self.model = None
         self.train_test_split_created = False
         self.pos_label = None
-        self.X_train: pd.DataFrame = pd.DataFrame()
+        self.x_train: pd.DataFrame = pd.DataFrame()
         self.y_train: pd.DataFrame = pd.DataFrame()
         self.X_test: pd.DataFrame = pd.DataFrame()
         self.y_test: pd.DataFrame = pd.DataFrame()
-        self.X_validation: pd.DataFrame = pd.DataFrame()
+        self.x_validation: pd.DataFrame = pd.DataFrame()
         self.y_validation: pd.DataFrame = pd.DataFrame()
+
+        
 
     def update_actions_performed(
         self, dict_key, attributes={}, needed_for_test=False
     ) -> None:
+        """Update actions on the dataset and track them.
+        Args:
+            dict_key: the key that will be used to reference in the dictionary.
+            attributes: A dictionary containing the values to be stored wrt
+                to the key provided.
+            needed_for_test: A boolean that indicates if a particular dict_key,
+                attributes pair is needed for test.
+
+        Returns:
+            None
+            This function only updates the actions_performed dictionary and
+                returns None.
+        """
+
         self.actions_performed[dict_key] = {
             "attributes": attributes,
             "needed_for_test": needed_for_test,
@@ -63,16 +81,16 @@ class HelperFunctionsML:
         temp = getattr(self, "set_target")(col_name)
         print("getattr(self.set_target)(col_name) : {}".format(temp))
 
-    def set_X_train(self, X_train) -> None:
+    def set_x_train(self, x_train) -> None:
         """If you want to add a train dataset separately, use can this function"""
-        self.X_train = X_train
-        self.update_actions_performed("set_X_train", attributes={"X_train": X_train})
+        self.x_train = x_train
+        self.update_actions_performed("set_x_train", attributes={"x_train": x_train})
 
-    def set_X_validation(self, X_validation) -> None:
+    def set_x_validation(self, x_validation) -> None:
         """If you want to add validation dataset separately, use can this function"""
-        self.X_validation = X_validation
+        self.x_validation = x_validation
         self.update_actions_performed(
-            "set_X_validation", attributes={"X_validation": X_validation}
+            "set_x_validation", attributes={"x_validation": x_validation}
         )
 
     def set_y_train(self, y_train) -> None:
@@ -98,8 +116,9 @@ class HelperFunctionsML:
 
     # @staticmethod
     def cat_num_extract(self) -> dict:
+        """This function returns the names of the Categorical and Nmeric attributes
+        in the same order."""
         f_name = "cat_num_extract"
-        """This function returns the names of the Categorical and Nmeric attributes in the same order."""
         self.cat_cols = [
             i
             for i in self.dataset.columns
@@ -209,8 +228,10 @@ class HelperFunctionsML:
     def impute_numeric_cols(
         self, test_dataset=None, return_frames=False
     ) -> pd.DataFrame:
-        """This function replaces the na values with the colum mean or median ,  based on the selection.
-        This function might not be needed anymore as sklearn .22 has KNN imputation which I would prefer to use."""
+        """This function replaces the na values with the colum mean or median ,
+        based on the selection.
+        This function might not be needed anymore as sklearn .22 has KNN imputation
+            which I would prefer to use."""
         f_name = "impute_numeric_cols"
         num_cols = self.num_cols
         print("num_cols : {}".format(num_cols))
@@ -245,7 +266,8 @@ class HelperFunctionsML:
     def create_dummy_data_frame(
         self, categorical_attributes=None, return_frames=False
     ) -> Union[None, pd.DataFrame]:
-        """This function returns a dataframe of dummified colums Pass the dataset and the column names."""
+        """This function returns a dataframe of dummified colums Pass the dataset
+        and the column names."""
         if categorical_attributes is None:
             categorical_attributes = self.cat_cols
             print("cat_cols : {}".format(categorical_attributes))
@@ -272,20 +294,22 @@ class HelperFunctionsML:
             ].astype(col_type)
         else:
             print(
-                "target not set, call the function set_target with the name of the target column"
+                """target not set,
+                 call set_target function with the name of the target column"""
             )
 
     # def create_data_for_model(self):
     # 	if self.dummies:
-    # 		self.model_data = pd.concat([self.dataset.loc[:, self.num_cols], self.catergorical_dummies,
+    # 		self.model_data = pd.concat([self.dataset.loc[:, self.num_cols],
+    #  self.catergorical_dummies,
     #  self.dataset.loc[:, self.target]], axis = 1)
     # 	else:
     # 		self.model_data = self.dataset
 
     def create_train_test_split(
         self,
-        cat_cols,
-        num_cols,
+        cat_cols = list(),
+        num_cols = list(),
         validation_size=0.3,
         random_state=42,
         return_frames=False,
@@ -298,26 +322,27 @@ class HelperFunctionsML:
             cols_for_models.extend(cat_cols)
             cols_for_models = list(set(cols_for_models))
             self.cols_for_models = cols_for_models
-            X = self.dataset.loc[
+            x = self.dataset.loc[
                 :, [i for i in self.dataset.columns if i in cols_for_models]
             ]
             y = self.model_data.loc[:, [self.target]]
-            X_train, X_validation, y_train, y_validation = train_test_split(
-                X, y, test_size=validation_size, random_state=random_state
+            x_train, x_validation, y_train, y_validation = train_test_split(
+                x, y, test_size=validation_size, random_state=random_state
             )
             self.train_test_split_created = True
-            self.X_train = X_train
-            self.X_validation = X_validation
+            self.x_train = x_train
+            self.x_validation = x_validation
             self.y_train = y_train
             self.y_validation = y_validation
-            self.nrowstrain, self.ncolstrain = X_train.shape
-            self.nrowvalidation, self.ncolsvalidation = X_validation.shape
+            self.nrowstrain, self.ncolstrain = x_train.shape
+            self.nrowvalidation, self.ncolsvalidation = x_validation.shape
         else:
             print(
-                "target not set, call the function set_target with the name of the target column"
+                """target not set,
+                    call the function set_target with the name of the target column"""
             )
         if return_frames:
-            return X_train, X_validation, y_train, y_validation
+            return x_train, x_validation, y_train, y_validation
 
     def compute_mertics(self, preds, trues) -> dict:
         """Compute various metrics"""
@@ -392,13 +417,13 @@ class HelperFunctionsML:
         )
         self.model = model_obj
         if not self.train_test_split_created:
-            self.create_train_test_split
-        self.model.fit(self.X_train, self.y_train)
+            self.create_train_test_split()
+        self.model.fit(self.x_train, self.y_train)
         # evaluation metrics
-        pred_train = self.model.predict(self.X_train)  # predict on the validation set
+        pred_train = self.model.predict(self.x_train)  # predict on the validation set
         # self.pred_train = pred_train
         pred_val = self.model.predict(
-            self.X_validation
+            self.x_validation
         )  # predict on the validation set
         # self.pred_val = pred_val
         performance = {}
@@ -410,7 +435,8 @@ class HelperFunctionsML:
                     performance["model_obj"] = type(self.model).__name__
             except Exception as e:
                 print(
-                    f"Extracting name of the model failed with exception {e}. Using model object as name of the model"
+                    f"""Extracting name of the model failed with exception {e}.
+                        Using model object as name of the model"""
                 )
                 performance["model_obj"] = self.model
         else:
@@ -433,7 +459,8 @@ class HelperFunctionsML:
     def compare_model_performance(
         self, model_objs_list=[], model_names_list=[], feature_names=None
     ):
-        """pass a list of model objects, this function will apply all the models and return a dataframe with the performance
+        """pass a list of model objects, this function will apply all the models and
+            return a dataframe with the performance
         measures
         Input : list of model objects
                                         list of model names (optional)
@@ -466,13 +493,14 @@ class HelperFunctionsML:
     # Replace values in an attribute with other values
     def replace_attribute_values(self, target_attribute, originals, replace_with):
         """Experimental:
-        This function takes a pandas series object and replaces the specified values with specified values."""
+        This function takes a pandas series object and replaces the specified values
+            with specified values."""
         if len(originals) == len(replace_with):
-            for i in range(len(originals)):
-                self.X_train[target_attribute].replace(
+            for i in _,enumerate(len(originals)):
+                self.x_train[target_attribute].replace(
                     originals[i], replace_with[i], inplace=True
                 )
-                self.X_validation[target_attribute].replace(
+                self.x_validation[target_attribute].replace(
                     originals[i], replace_with[i], inplace=True
                 )
         elif len(originals != len(replace_with)):

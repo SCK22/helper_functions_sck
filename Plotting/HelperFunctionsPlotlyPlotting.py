@@ -71,12 +71,10 @@ def plot_count_bar(dataframe_name, col_name, top_n=None):
     data = [
         go.Bar(
             x=temp.index.astype(str),  # x axis values
-            y=np.round(temp.values.astype(float) / temp.values.sum(), 4)
-            * 100,  # y axis values
+            y=np.round(temp.values.astype(float) / temp.values.sum(), 4) * 100,  # y axis values
             text=[
                 "{}%".format(i)
-                for i in np.round(temp.values.astype(float) / temp.values.sum(), 4)
-                * 100
+                for i in np.round(temp.values.astype(float) / temp.values.sum(), 4) * 100
             ],
             # text to be displayed on the bar, we are doing this to display the '%' symbol along with the number on the bar
             textposition="auto",  # specify at which position on the bar the text should appear
@@ -144,8 +142,6 @@ def plot_multi_box(dataframe, col_name, num_col_name):
     for i in dataframe[col_name].unique():
         trace = go.Box(y=dataframe[num_col_name][dataframe[col_name] == i], name=i)
         data.append(trace)
-    layout = go.Layout(
-        title="Boxplot of levels in {} for {} column".format(col_name, num_col_name)
-    )
+    layout = go.Layout(title="Boxplot of levels in {} for {} column".format(col_name, num_col_name))
     fig = go.Figure(data=data, layout=layout)
     return iplot(fig)
